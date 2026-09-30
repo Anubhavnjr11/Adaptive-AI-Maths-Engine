@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Math AI Platform</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    nav {
+      display: flex;
+      gap: 10px;
+      border-bottom: 2px solid #eaeaea;
+      padding-bottom: 15px;
+      margin-bottom: 25px;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #e4e6eb;
+      color: #4b4f56;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .portal {
+      display: none;
+    }
+
+    .portal.active {
+      display: block;
+    }
+
+    .quiz-card {
+      background: #fafbfc;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 25px;
+      margin-top: 15px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      background: #e2e8f0;
+    }
+
+    .options-container {
+      margin: 20px 0;
+    }
+
+    .option-label {
+      display: block;
+      padding: 12px;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .option-label:hover {
+      background: #f0f7ff;
+    }
+
+    .submit-btn {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .metric-card {
+      padding: 20px;
+      border-radius: 8px;
+      color: white;
+    }
+
+    .easy-card {
+      background: #28a745;
+    }
+
+    .medium-card {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .hard-card {
+      background: #dc3545;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eaeaea;
+    }
+
+    th {
+      background: #f8f9fa;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <nav>
+      <button class="nav-btn active" onclick="switchView('student')">
+        🎓 Student Math Portal
+      </button>
+
+      <button class="nav-btn" onclick="switchView('teacher')">
+        📊 Teacher Dashboard
+      </button>
+    </nav>
+
+    <!-- STUDENT PORTAL -->
+    <div id="studentView" class="portal active">
+
+      <h2>Adaptive Math Engine</h2>
+
+      <div id="quizContainer" class="quiz-card"></div>
+
+    </div>
+
+    <!-- TEACHER DASHBOARD -->
+    <div id="teacherView" class="portal">
+
+      <h2>Teacher Mathematics Analytics</h2>
+
+      <div class="metrics-grid">
+
+        <div class="metric-card easy-card">
+          <h3>🟢 Easy Problems</h3>
+          <p id="easyStats"
+             style="font-size: 24px; font-weight: bold; margin: 0;">
+            0 / 0 Correct
+          </p>
+        </div>
+
+        <div class="metric-card medium-card">
+          <h3>🟡 Medium Problems</h3>
+          <p id="mediumStats"
+             style="font-size: 24px; font-weight: bold; margin: 0;">
+            0 / 0 Correct
+          </p>
+        </div>
+
+        <div class="metric-card hard-card">
+          <h3>🔴 Hard Problems</h3>
+          <p id="hardStats"
+             style="font-size: 24px; font-weight: bold; margin: 0;">
+            0 / 0 Correct
+          </p>
+        </div>
+
+      </div>
+
+      <h3>📋 Detailed Student Math Attempt Log</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Math Concept</th>
+            <th>Difficulty Evaluated</th>
+            <th>Student Response status</th>
+          </tr>
+        </thead>
+
+        <tbody id="logsTableBody"></tbody>
+      </table>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    // 📚 Verified Pure Mathematics Dataset Repository
+
+    const questionBank = {
+
+      Easy: [
+        {
+          text: "What is 15 - 7?",
+          options: ["6", "7", "8", "9"],
+          correct: "8",
+          topic: "Basic Arithmetic"
+        },
+        {
+          text: "Simplify: 4 x 3 + 2",
+          options: ["14", "20", "16", "10"],
+          correct: "14",
+          topic: "Basic Arithmetic"
+        },
+        {
+          text: "Find the perimeter of a square with a side length of 5 cm.",
+          options: ["20 cm", "25 cm", "15 cm", "10 cm"],
+          correct: "20 cm",
+          topic: "Geometry Fundamentals"
+        },
+        {
+          text: "What is the area of the rhombus with one side as 5 cm and one diagonal as 8 meters?.",
+          options: ["35", "32", "38", "24"],
+          correct: "24",
+          topic: "Geometry Fundamentals"
+        }
+      ],
+
+      Medium: [
+        {
+          text: "Solve for x: 3x - 5 = 16",
+          options: ["x = 5", "x = 6", "x = 7", "x = 8"],
+          correct: "x = 7",
+          topic: "Algebraic Equations"
+        },
+        {
+          text: "What is the square root of 144?",
+          options: ["10", "11", "12", "14"],
+          correct: "12",
+          topic: "Basic Arithmetic"
+        },
+        {
+          text: "Find the area of a right-angled triangle with base 6 cm and height 4 cm.",
+          options: ["24 cm²", "12 cm²", "10 cm²", "8 cm²"],
+          correct: "12 cm²",
+          topic: "Geometry Fundamentals"
+        },
+        {
+          text: "[[1,0],[0,1]] is called",
+          options: ["Diagonal Matrix", "singular Matrix", "Zero Matrix", "Identity Matrix"],
+          correct: "Identity Matrix",
+          topic: "Matrix"
+        },
+        {
+          text: "The pairs of equations x+2y-5 = 0 and -4x-8y+20=0 have:.",
+          options: ["Unique Solution", "Exactly two solutions", "Infinitely many solutions", "No solution"],
+          correct: "Infinitely many solutions",
+          topic: "Linear Equation"
+        },
+        {
+          text: "If the lines 3x+2ky - 2 = 0 and 2x+5y+1 = 0 are parallel, then what is the value of k?.",
+          options: ["4/15", "15/4", "4/5", "15/4"],
+          correct: "15/4",
+          topic: "Linear Equation"
+        },
+        {
+          text: "The solution of the equations x-y=2 and x+y=4 is:.",
+          options: ["3 and 1", "4 and 3", "5 and 1", "-1 and -3"],
+          correct: "3 and 1",
+          topic: "Linear Equation"
+        }
+        
+        
+      ],
+
+      Hard: [
+        {
+          text: "What is the derivative of 3x² + 5x?",
+          options: ["6x", "6x + 5", "3x + 5", "6x² + 5"],
+          correct: "6x + 5",
+          topic: "Calculus Fundamentals"
+        },
+        {
+          text: "Solve the matrix value for x: If log₂(x) = 5, what is x?",
+          options: ["10", "25", "32", "64"],
+          correct: "32",
+          topic: "Advanced Algebra"
+        },
+        {
+          text: "Evaluate the integral: ∫ 2x dx from x=0 to x=3.",
+          options: ["3", "6", "9", "12"],
+          correct: "9",
+          topic: "Calculus Fundamentals"
+        },
+        {
+            text: "what is the derivative of : eˣ  ?",
+            options: ["eˣ/x", "eˣ", "x", "6x²"],
+            correct: "eˣ",
+            topic: "Calculus Fundamentals"
+        },
+        {
+          text: "Evaluate the integral: ∫ sin x dx .",
+          options: ["-sin x + c", "tan x + c", "cos x + c", "-cos x + c"],
+          correct: "-cos x + c",
+          topic: "Calculus Fundamentals"
+        },
+        {
+          text: "If A=[[1,2],[3,4]] and B=[[2,0],[1,2]]  then A+B.",
+          options: ["[[3,2],[4,6]]", "[[2,4],[3,8]]", "[[1,2],[2,2]]", "[[3,0],[4,6]]"],
+          correct: "[[3,2],[4,6]]",
+          topic: "Matrix"
+        },
+      ]
+
+    };
+
+
+    // =========================================================
+    // TRACKING STATES
+    // =========================================================
+
+    let currentDifficulty = "Medium";
+
+    let currentQuestionIndex = 0;
+
+    // Tracks how many questions have been answered
+    // in the current 2-question difficulty round.
+    let roundCorrect = 0;
+    let roundAnswered = 0;
+
+    let performanceSummary = {
+
+      Easy: {
+        correct: 0,
+        total: 0
+      },
+
+      Medium: {
+        correct: 0,
+        total: 0
+      },
+
+      Hard: {
+        correct: 0,
+        total: 0
+      }
+
+    };
+
+    let detailedLogs = [];
+
+    let activeQuestion = null;
+
+
+    // =========================================================
+    // SWITCH BETWEEN STUDENT AND TEACHER
+    // =========================================================
+
+    function switchView(viewName) {
+
+      document
+        .querySelectorAll('.portal')
+        .forEach(p => p.classList.remove('active'));
+
+      document
+        .querySelectorAll('.nav-btn')
+        .forEach(b => b.classList.remove('active'));
+
+      if (viewName === 'student') {
+
+        document
+          .getElementById('studentView')
+          .classList.add('active');
+
+        event.currentTarget.classList.add('active');
+
+      } else {
+
+        document
+          .getElementById('teacherView')
+          .classList.add('active');
+
+        event.currentTarget.classList.add('active');
+
+        renderTeacherDashboard();
+
+      }
+
+    }
+
+
+    // =========================================================
+    // LOAD NEXT QUESTION
+    // =========================================================
+
+    function loadNextQuestion() {
+
+      const pool = questionBank[currentDifficulty];
+
+      activeQuestion =
+        pool[currentQuestionIndex % pool.length];
+
+      const container =
+        document.getElementById('quizContainer');
+
+
+      const optionsHtml =
+        activeQuestion.options
+          .map(opt => `
+            <label class="option-label">
+              <input
+                type="radio"
+                name="quizOption"
+                value="${opt}">
+              ${opt}
+            </label>
+          `)
+          .join('');
+
+
+      container.innerHTML = `
+
+        <span
+          class="badge"
+          style="background:#e3f2fd; color:#0d47a1;">
+          Difficulty: ${currentDifficulty}
+        </span>
+
+        <span
+          class="badge"
+          style="background:#e8f5e9;
+                 color:#1b5e20;
+                 margin-left:5px;">
+          Topic: ${activeQuestion.topic}
+        </span>
+
+        <p
+          style="font-size: 20px;
+                 font-weight: bold;
+                 margin-top: 15px;
+                 color:#2c3e50;">
+          ${activeQuestion.text}
+        </p>
+
+        <div class="options-container">
+          ${optionsHtml}
+        </div>
+
+        <button
+          class="submit-btn"
+          onclick="submitAnswer()">
+          Submit Math Answer
+        </button>
+
+      `;
+
+    }
+
+
+    // =========================================================
+    // SUBMIT ANSWER
+    // =========================================================
+
+    function submitAnswer() {
+
+      const selected =
+        document.querySelector(
+          'input[name="quizOption"]:checked'
+        );
+
+
+      if (!selected) {
+
+        alert("Please select a numerical answer option!");
+
+        return;
+
+      }
+
+
+      const isCorrect =
+        selected.value === activeQuestion.correct;
+
+
+      // -----------------------------------------
+      // Update overall performance statistics
+      // -----------------------------------------
+
+      performanceSummary[currentDifficulty].total += 1;
+
+
+      if (isCorrect) {
+
+        performanceSummary[currentDifficulty].correct += 1;
+
+        roundCorrect++;
+
+      }
+
+
+      roundAnswered++;
+
+
+      // -----------------------------------------
+      // Store detailed attempt
+      // -----------------------------------------
+
+      detailedLogs.push({
+
+        topic: activeQuestion.topic,
+
+        difficulty: currentDifficulty,
+
+        status: isCorrect
+          ? "✅ Correct"
+          : "❌ Incorrect"
+
+      });
+
+
+      // -----------------------------------------
+      // Show answer result
+      // -----------------------------------------
+
+      if (isCorrect) {
+
+        alert(
+          `Correct!\n\n` +
+          `Question ${roundAnswered} of 2 completed.`
+        );
+
+      } else {
+
+        alert(
+          `Incorrect.\n\n` +
+          `Question ${roundAnswered} of 2 completed.`
+        );
+
+      }
+
+
+      // -----------------------------------------
+      // ADAPTIVE DIFFICULTY LOGIC
+      // -----------------------------------------
+      //
+      // 2 correct  → UP
+      // 2 wrong    → DOWN
+      // 1 correct
+      // 1 wrong    → SAME LEVEL
+      //
+      // -----------------------------------------
+
+      if (roundAnswered === 2) {
+
+        if (roundCorrect === 2) {
+
+          // BOTH CORRECT → MOVE UP
+
+          if (currentDifficulty === "Easy") {
+
+            currentDifficulty = "Medium";
+
+          } else if (currentDifficulty === "Medium") {
+
+            currentDifficulty = "Hard";
+
+          }
+
+          alert(
+            "🎉 Both questions are correct!\n\n" +
+            "Difficulty level UP."
+          );
+
+
+        } else if (roundCorrect === 0) {
+
+          // BOTH WRONG → MOVE DOWN
+
+          if (currentDifficulty === "Hard") {
+
+            currentDifficulty = "Medium";
+
+          } else if (currentDifficulty === "Medium") {
+
+            currentDifficulty = "Easy";
+
+          }
+
+          alert(
+            "📉 Both questions are incorrect.\n\n" +
+            "Difficulty level DOWN."
+          );
+
+
+        } else {
+
+          // ONE CORRECT + ONE WRONG
+          // STAY AT SAME LEVEL
+
+          alert(
+            "⚖️ One question correct and one incorrect.\n\n" +
+            "Difficulty level stays the SAME."
+          );
+
+        }
+
+
+        // Reset the 2-question round
+
+        roundAnswered = 0;
+
+        roundCorrect = 0;
+
+      }
+
+
+      // Move to next question
+
+      currentQuestionIndex++;
+
+      loadNextQuestion();
+
+    }
+
+
+    // =========================================================
+    // TEACHER DASHBOARD
+    // =========================================================
+
+    function renderTeacherDashboard() {
+
+      document.getElementById('easyStats').innerText =
+        `${performanceSummary.Easy.correct} / ${performanceSummary.Easy.total} Correct`;
+
+
+      document.getElementById('mediumStats').innerText =
+        `${performanceSummary.Medium.correct} / ${performanceSummary.Medium.total} Correct`;
+
+
+      document.getElementById('hardStats').innerText =
+        `${performanceSummary.Hard.correct} / ${performanceSummary.Hard.total} Correct`;
+
+
+      const tbody =
+        document.getElementById('logsTableBody');
+
+
+      tbody.innerHTML =
+        detailedLogs
+          .map(log => `
+
+            <tr>
+
+              <td>
+                ${log.topic}
+              </td>
+
+              <td>
+                <strong>
+                  ${log.difficulty}
+                </strong>
+              </td>
+
+              <td
+                style="
+                  font-weight: bold;
+                  color:
+                    ${log.status.includes('✅')
+                      ? '#28a745'
+                      : '#dc3545'};
+                ">
+
+                ${log.status}
+
+              </td>
+
+            </tr>
+
+          `)
+          .join('');
+
+    }
+
+
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
+
+    loadNextQuestion();
+
+  </script>
+
+</body>
+</html>

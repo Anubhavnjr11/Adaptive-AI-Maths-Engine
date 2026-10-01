@@ -1,0 +1,17 @@
+{
+  "name": "adaptive-ai-maths-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Adaptive AI Math Engine Platform",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true
+  }
+}
